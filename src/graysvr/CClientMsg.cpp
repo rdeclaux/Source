@@ -3657,8 +3657,15 @@ BYTE CClient::Setup_Start( CChar * pChar ) // Send character startup stuff to pl
 	//Resend buff icons
 	resendBuffs();
 
-	// Send Notoriety Status from all nearby characters.
-	m_pChar->NotoSave_Update();
+	// Clear notoriety status from all nearby characters
+	CWorldSearch AreaChars(m_pChar->GetTopPoint(), UO_MAP_VIEW_SIZE);
+	for (;;)
+	{
+		CChar * pCharNear = AreaChars.GetChar();
+		if ( pCharNear == NULL )
+			break;
+		pCharNear->NotoSave_Clear();
+	}
 
 	if ( IsTrigUsed(TRIGGER_LOGIN) )
 	{
