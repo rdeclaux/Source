@@ -1253,14 +1253,6 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 	if ( pCriminal->IsPriv(PRIV_GM) )
 		return;
 
-	if ( pCriminal->Noto_Criminal( this ) == true )
-		return;
-
-	// Make my owner criminal too (if I have one)
-	CChar * pOwner = pCriminal->NPC_PetGetOwner();
-	if ( pOwner != NULL && pOwner != this )
-		OnNoticeCrime( pOwner, pCharMark );
-
 	if ( m_pPlayer )
 	{
 		// I have the option of attacking the criminal. or calling the guards.
@@ -1273,10 +1265,20 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 			OnTrigger(CTRIG_SeeCrime, pCriminal, &Args);
 			bCriminal = Args.m_iN1 ? true : false;
 		}
-		if (bCriminal)
+		if (bCriminal) {
 			Memory_AddObjTypes( pCriminal, MEMORY_SAWCRIME );
+			pCriminal->NotoSave_Update();
+		}
 		return;
 	}
+
+	if ( pCriminal->Noto_Criminal( this ) == true )
+		return;
+
+	// Make my owner criminal too (if I have one)
+	CChar * pOwner = pCriminal->NPC_PetGetOwner();
+	if ( pOwner != NULL && pOwner != this )
+		OnNoticeCrime( pOwner, pCharMark );
 
 	// NPC's can take other actions.
 
@@ -1296,6 +1298,7 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 		// I being the victim can retaliate.
 		Memory_AddObjTypes( pCriminal, MEMORY_SAWCRIME );
 		OnHarmedBy( pCriminal, 1 );
+		pCriminal->NotoSave_Update();
 	}
 
 	if ( ! NPC_CanSpeak())
@@ -1740,7 +1743,7 @@ void CChar::CallGuards( CChar * pCriminal )
 
 			// mark person a criminal if seen him criming
 			// Only players call guards this way. NPC's flag criminal instantly.
-			if ( m_pPlayer && Memory_FindObjTypes(pChar, MEMORY_SAWCRIME|MEMORY_HARMEDBY) )
+			if ( m_pPlayer && Memory_FindObjTypes(pChar, MEMORY_SAWCRIME) )
 				pChar->Noto_Criminal();
 			
 			if ( ( pChar->IsStatFlag( STATF_Criminal ) || ( pChar->Noto_IsEvil() &&  g_Cfg.m_fGuardsOnMurderers) ) && pChar->m_pArea->IsGuarded()  )
