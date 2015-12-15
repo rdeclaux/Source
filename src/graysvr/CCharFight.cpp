@@ -193,11 +193,14 @@ NOTO_TYPE CChar::Noto_GetFlag( const CChar * pCharViewer, bool fAllowIncog, bool
 	NOTO_TYPE Noto;
 	if ( pThis->m_notoSaves.size() )
 	{
-		int id = pThis->NotoSave_GetID( pTarget );
+		//int id = pThis->NotoSave_GetID( pTarget );
+		int id = -1;
+		if (pThis->m_pNPC && pThis->NPC_PetGetOwner())	// If I'm a pet and have owner I redirect noto to him.
+			pThis = pThis->NPC_PetGetOwner();
+
+		id = pThis->NotoSave_GetID(pTarget);
 		if ( id != -1 )
-		{
 			return pThis->NotoSave_GetValue( id );
-		}
 	}
 	if (IsTrigUsed(TRIGGER_NOTOSEND))
 	{
@@ -287,73 +290,45 @@ NOTO_TYPE CChar::Noto_CalcFlag( const CChar * pCharViewer, bool fAllowIncog, boo
 
 	if ( this != pCharViewer ) // Am I checking myself?
 	{
+		// If they saw me commit a crime or I am their aggressor then criminal to just them.
+		CItemMemory * pMemory = pCharViewer->Memory_FindObjTypes( this, MEMORY_SAWCRIME|MEMORY_AGGREIVED );
+		if ( pMemory != NULL )
+			return( NOTO_CRIMINAL );
+
+		// Are we in the same party ?
+		if ( m_pParty && m_pParty == pCharViewer->m_pParty )
+		{
+			if ( m_pParty->GetLootFlag(this))
+				return(NOTO_GUILD_SAME);
+		}
+
 		// Check the guild stuff
-		CItemStone * pMyTown = Guild_Find(MEMORY_TOWN);
 		CItemStone * pMyGuild = Guild_Find(MEMORY_GUILD);
-		if ( pMyGuild || pMyTown )
+		if ( pMyGuild )
 		{
 			CItemStone * pViewerGuild = pCharViewer->Guild_Find(MEMORY_GUILD);
-			CItemStone * pViewerTown = pCharViewer->Guild_Find(MEMORY_TOWN);
-			// Are we both in a guild?
-			if ( pViewerGuild || pViewerTown )
+			if ( pViewerGuild )
 			{
-				if ( pMyGuild && pMyGuild->IsPrivMember(this))
-				{
-					if ( pViewerGuild && pViewerGuild->IsPrivMember(pCharViewer))
-					{
-						if ( pViewerGuild == pMyGuild ) // Same guild?
-							return NOTO_GUILD_SAME; // return green
-						if ( pMyGuild->IsAlliedWith(pViewerGuild))
-							return NOTO_GUILD_SAME;
-						// Are we in different guilds but at war? (not actually a crime right?)
-						if ( pMyGuild->IsAtWarWith(pViewerGuild))
-							return NOTO_GUILD_WAR; // return orange
-					}
-					if ( pMyGuild->IsAtWarWith(pViewerTown))
-						return NOTO_GUILD_WAR; // return orange
-				}
-				if ( pMyTown && pMyTown->IsPrivMember(this))
-				{
-					if ( pViewerGuild && pViewerGuild->IsPrivMember(pCharViewer))
-					{
-						if ( pMyTown->IsAtWarWith(pViewerGuild))
-							return NOTO_GUILD_WAR; // return orange
-					}
-					if ( pMyTown->IsAtWarWith(pViewerTown))
-						return NOTO_GUILD_WAR; // return orange
-				}
+				if ( pViewerGuild == pMyGuild )
+					return NOTO_GUILD_SAME;
+				if ( pMyGuild->IsAlliedWith(pViewerGuild))
+					return NOTO_GUILD_SAME;
+				if ( pMyGuild->IsAtWarWith(pViewerGuild))
+					return NOTO_GUILD_WAR;
 			}
 		}
-	}
 
-	if ( IsStatFlag( STATF_Criminal ))	// criminal to everyone.
-	{
-		return( NOTO_CRIMINAL );
-	}
-
-	if ( this != pCharViewer ) // Am I checking myself?
-	{
-		if ( NPC_IsOwnedBy( pCharViewer, false ))	// All pets are neutral to their owners.
-			return( NOTO_NEUTRAL );
-
-		// If they saw me commit a crime or I am their aggressor then
-		// criminal to just them.
-		CItemMemory * pMemory = pCharViewer->Memory_FindObjTypes( this, MEMORY_SAWCRIME | MEMORY_AGGREIVED );
-		if ( pMemory != NULL )
+		// Check the town stuff
+		CItemStone * pMyTown = Guild_Find(MEMORY_TOWN);
+		if ( pMyTown )
 		{
-			return( NOTO_CRIMINAL );
+			CItemStone * pViewerTown = pCharViewer->Guild_Find(MEMORY_TOWN);
+			if ( pViewerTown )
+			{
+				if ( pMyTown->IsAtWarWith(pViewerTown))
+					return NOTO_GUILD_WAR;
+			}
 		}
-	}
-
-	if ( m_pArea && m_pArea->IsFlag(REGION_FLAG_ARENA))
-	{
-		// everyone is neutral here.
-		return( NOTO_NEUTRAL );
-	}
-
-	if ( Noto_IsNeutral() || m_TagDefs.GetKeyNum("NOTO.PERMAGREY", true))
-	{
-		return( NOTO_NEUTRAL );
 	}
 
 	return( NOTO_GOOD );
