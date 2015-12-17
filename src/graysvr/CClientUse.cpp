@@ -1220,6 +1220,9 @@ bool CClient::Cmd_Skill_Tracking( unsigned int track_sel, bool fExec )
 			if ( m_pChar == pChar )
 				continue;
 
+			if ( pChar->Skill_GetBase( SKILL_TAMING ) > m_pChar->Skill_GetBase( SKILL_TAMING ))
+				continue;
+
 			if ( GetPrivLevel() < pChar->GetPrivLevel() && pChar->IsStatFlag(STATF_Insubstantial) )
 				continue;
 
