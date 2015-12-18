@@ -271,21 +271,21 @@ NOTO_TYPE CChar::Noto_CalcFlag( const CChar * pCharViewer, bool fAllowIncog, boo
 
 	if ( fAllowInvul && IsStatFlag(STATF_INVUL))
 		return NOTO_INVUL;
+	if ( m_pArea && m_pArea->IsFlag(REGION_FLAG_ARENA)) // everyone is neutral here.
+		return NOTO_NEUTRAL;			
+	if ( Noto_IsEvil())
+		return NOTO_EVIL;
 	if (IsStatFlag(STATF_Criminal))		// criminal to everyone.
 		return NOTO_CRIMINAL;
 	if ( fAllowIncog && IsStatFlag(STATF_Incognito))
 		return NOTO_NEUTRAL;
-	if ( m_pArea && m_pArea->IsFlag(REGION_FLAG_ARENA))
-		return NOTO_NEUTRAL;			// everyone is neutral here.
-	if ( Noto_IsEvil())
-		return NOTO_EVIL;
 	if ( Noto_IsNeutral())
 		return NOTO_NEUTRAL;
 
 	if ( this != pCharViewer ) // Am I checking myself?
 	{
 		// If they saw me commit a crime or I am their aggressor then criminal to just them.
-		CItemMemory * pMemory = pCharViewer->Memory_FindObjTypes(this, MEMORY_SAWCRIME | MEMORY_AGGREIVED | MEMORY_HARMEDBY);
+		CItemMemory * pMemory = pCharViewer->Memory_FindObjTypes(this, MEMORY_SAWCRIME | MEMORY_AGGREIVED);
 		if ( pMemory != NULL )
 			return( NOTO_CRIMINAL );
 
@@ -1007,6 +1007,8 @@ bool CChar::Memory_UpdateFlags( CItemMemory * pMemory )
 		iCheckTime = 30*TICK_PER_SEC;
 	else if ( wMemTypes & ( MEMORY_IPET | MEMORY_GUARD | MEMORY_ISPAWNED | MEMORY_GUILD | MEMORY_TOWN ))
 		iCheckTime = -1;	// never go away.
+	//else if ( wMemTypes & ( CRIMINAL memories )) // FIXME ROBERT NOTOUPDATE FIX 
+	//NotoSave_Update();
 	else if ( m_pNPC )	// MEMORY_SPEAK
 		iCheckTime = 5*60*TICK_PER_SEC;
 	else
