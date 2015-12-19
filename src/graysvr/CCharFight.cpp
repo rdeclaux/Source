@@ -1258,7 +1258,7 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 	if ( pCriminal->Noto_Criminal( this ) == true )
 		return;
 
-	if ( pCharMark->Noto_IsEvil() == true ) // FIXME ROBERT
+	if ( pCharMark->Noto_IsMurderer() == true ) // FIXME ROBERT
 		return;
 
 	if ( m_pPlayer )
@@ -1303,7 +1303,6 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 		// I being the victim can retaliate.
 		Memory_AddObjTypes( pCriminal, MEMORY_SAWCRIME );
 		OnHarmedBy( pCriminal, 1 );
-		pCriminal->NotoSave_Update();
 	}
 
 	if ( ! NPC_CanSpeak())
