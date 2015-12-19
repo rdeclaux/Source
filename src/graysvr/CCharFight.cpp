@@ -1237,7 +1237,7 @@ bool CChar::Memory_OnTick( CItemMemory * pMemory )
 }
 
 //////////////////////////////////////////////////////////////////////////////
-
+//pCriminal doing the harm thing
 void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 {
 	ADDTOCALLSTACK("CChar::OnNoticeCrime");
@@ -1255,9 +1255,6 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 	if ( pCriminal->IsPriv(PRIV_GM) )
 		return;
 
-	if ( pCharMark->Noto_IsMurderer() == true ) // FIXME ROBERT
-		return;
-
 	if ( m_pPlayer )
 	{
 		// I have the option of attacking the criminal. or calling the guards.
@@ -1272,6 +1269,7 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 		}
 		if (bCriminal) {
 			Memory_AddObjTypes( pCriminal, MEMORY_SAWCRIME );
+			//DEBUG_ERR(("1pCriminal %d, mark %d \n",pCriminal->GetUID(),GetUID()));
 			pCriminal->NotoSave_Update();
 		}
 		return;
@@ -1303,6 +1301,7 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 	{
 		// I being the victim can retaliate.
 		Memory_AddObjTypes( pCriminal, MEMORY_SAWCRIME );
+		//DEBUG_ERR(("2pCriminal %d, mark %d \n",pCriminal->GetUID(),GetUID()));
 		OnHarmedBy( pCriminal, 1 );
 	}
 
@@ -1373,6 +1372,13 @@ bool CChar::CheckCrimeSeen( SKILL_TYPE SkillToSee, CChar * pCharMark, const CObj
 		// If a GM sees you it it not a crime.
 		if ( pChar->GetPrivLevel() > GetPrivLevel())
 			continue;
+
+		if ( pChar->Noto_IsMurderer() == true ) // FIXME ROBERT
+			continue;
+
+		if ( pChar->Noto_IsCriminal() == true )
+			continue;
+
 		fSeen = true;
 
 		// They are not a criminal til someone calls the guards !!!
