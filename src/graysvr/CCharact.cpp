@@ -2821,6 +2821,7 @@ bool CChar::Death()
 
 	//	clear list of attackers
 	m_lastAttackers.clear();
+	NotoSave_Update();
 
 	if ( m_pPlayer )
 	{

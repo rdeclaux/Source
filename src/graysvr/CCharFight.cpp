@@ -1255,9 +1255,6 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 	if ( pCriminal->IsPriv(PRIV_GM) )
 		return;
 
-	if ( pCriminal->Noto_Criminal( this ) == true )
-		return;
-
 	if ( pCharMark->Noto_IsMurderer() == true ) // FIXME ROBERT
 		return;
 
@@ -1279,6 +1276,10 @@ void CChar::OnNoticeCrime( CChar * pCriminal, const CChar * pCharMark )
 		}
 		return;
 	}
+
+	if ( pCriminal->Noto_Criminal( this ) == true )
+		return;
+
 
 	// Make my owner criminal too (if I have one)
 	CChar * pOwner = pCriminal->NPC_PetGetOwner();
