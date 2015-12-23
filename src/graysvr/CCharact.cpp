@@ -2821,6 +2821,7 @@ bool CChar::Death()
 
 	//	clear list of attackers
 	m_lastAttackers.clear();
+	NotoSave_Update();
 
 	if ( m_pPlayer )
 	{
@@ -2849,7 +2850,13 @@ bool CChar::Death()
 		SetID(static_cast<CREID_TYPE>(g_Cfg.ResourceGetIndexType( RES_CHARDEF, pszGhostName )));
 		LayerAdd( CItem::CreateScript( ITEMID_DEATHSHROUD, this ));
 		Update();		// show everyone I am now a ghost.
-		
+
+		CClient * pClient = GetClient();
+		if ( pClient )
+		{
+			new PacketPlayerPosition(pClient);
+			pClient->addContainerSetup(GetPack());	// update backpack contents 
+		}
 		
 		//remove the characters which i cant see as dead from the screen
 		int iDeadCannotSee = g_Cfg.m_fDeadCannotSeeLiving;

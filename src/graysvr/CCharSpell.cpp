@@ -481,6 +481,7 @@ bool CChar::Spell_Resurrection(CItemCorpse * pCorpse, CChar * pCharSrc, bool bNo
 
 	Effect( EFFECT_OBJ, ITEMID_FX_HEAL_EFFECT, this, 9, 14 );
 	Update();
+	NotoSave_Update();
 	return( true );
 }
 

@@ -135,6 +135,7 @@ LPCTSTR const CChar::sm_szTrigName[CTRIG_QTY+1] =	// static
 	"@Resurrect",
 	"@SeeCrime",		// I saw a crime
 	"@SeeHidden",			// Can I see hidden chars?
+	"@SeeSnoop",
 
 	// SKTRIG_QTY
 	"@SkillAbort",

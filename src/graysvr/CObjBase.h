@@ -590,6 +590,8 @@ public:
 		// IT_LAVA
 		struct
 		{
+			short m_PolyStr;	// more1l=polymorph effect of this. (on strength)
+			short m_PolyDex;	// more1h=polymorph effect of this. (on dex)
 			int  m_spellcharges; // more2=not sure how used here..
 			WORD m_spell;		// morex=SPELL_TYPE = The magic spell cast on this. (daemons breath)(boots of strength) etc
 			WORD m_spelllevel;	// morey=0-1000=level of the spell.
@@ -2522,6 +2524,7 @@ enum CTRIG_TYPE
 
 	CTRIG_SeeCrime,			// I am seeing a crime
 	CTRIG_SeeHidden,		// I'm about to see a hidden char
+	CTRIG_SeeSnoop,			// I see someone Snooping something.
 
 	// SKTRIG_QTY
 	CTRIG_SkillAbort,			// SKTRIG_ABORT
@@ -2634,9 +2637,10 @@ public:
 	std::vector<LastAttackers> m_lastAttackers;
 	
 	struct NotoSaves {
-		INT64		time;
-		DWORD		charUID;
-		NOTO_TYPE	value;
+		DWORD		charUID;	// Character viewing me
+		NOTO_TYPE	color;		// Color sent on movement packets
+		INT64		time;		// Update timer
+		NOTO_TYPE	value;		// Notoriety type
 	};
 	std::vector<NotoSaves> m_notoSaves;
 
@@ -3334,7 +3338,7 @@ private:
 	void Noto_ChangeDeltaMsg( int iDelta, LPCTSTR pszType );
 
 public:
-	NOTO_TYPE Noto_GetFlag( const CChar * pChar, bool fIncog = false, bool fInvul = false ) const;
+	NOTO_TYPE Noto_GetFlag( const CChar * pChar, bool fIncog = false, bool fInvul = false, bool bGetColor = false ) const;
 	NOTO_TYPE Noto_CalcFlag( const CChar * pChar, bool fIncog = false, bool fInvul = false ) const;
 	HUE_TYPE Noto_GetHue( const CChar * pChar, bool fIncog = false ) const;
 	bool Noto_IsNeutral() const;
@@ -3356,8 +3360,8 @@ public:
 	void Noto_Murder();
 	void Noto_KarmaChangeMessage( int iKarmaChange, int iLimit );
 	int NotoSave() { return static_cast<int>(m_notoSaves.size()); }
-	void NotoSave_Add( CChar * pChar, NOTO_TYPE value );
-	NOTO_TYPE NotoSave_GetValue( int id );
+	void NotoSave_Add( CChar * pChar, NOTO_TYPE value, NOTO_TYPE color = NOTO_INVALID );
+	NOTO_TYPE NotoSave_GetValue( int id, bool bGetColor = false );
 	NOTO_TYPE NotoSave_GetValue( CChar * pChar );
 	INT64 NotoSave_GetTime( int id );
 	void NotoSave_SetValue( CChar * pChar, NOTO_TYPE value );

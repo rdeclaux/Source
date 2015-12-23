@@ -953,7 +953,10 @@ void CClient::Event_CombatMode( bool fWar ) // Only for switching to combat mode
 		DEBUG_WARN(("UserWarMode - Cleaning Skill Action\n"));
 	}
 
-
+	if ( ! fWar ) //fixme 15.12.2015
+	{
+		m_pChar->Fight_ClearAll();
+	}
 
 	addPlayerWarMode();
 	m_pChar->UpdateMode( this, m_pChar->IsStatFlag( STATF_DEAD ));
