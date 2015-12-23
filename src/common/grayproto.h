@@ -300,7 +300,7 @@ enum XCMD_TYPE	// XCMD_* messages are unique in both directions.
 	XCMD_NewSeed				= 0xef,
 	//	0xF0
 	XCMD_WalkNew		= 0xf0,
-	XCMD_TSyncReply		= 0xf1,
+	XCMD_WalkUnknown	= 0xf1,
 	XCMD_TSyncRequest	= 0xf2,
 	XCMD_PutNew			= 0xf3,
 	XCMD_CrashReport    = 0xf4,
@@ -1231,10 +1231,10 @@ struct CEvent	// event buffer from client to server..
 
 		struct // size = 9
 		{
-			BYTE m_Cmd;		// 0   = 0xF1  XCMD_TSyncRequest
+			BYTE m_Cmd;		// 0   = 0xF1  XCMD_WalkUnknown
 			NDWORD m_unk1;	// 1-4 = 00 00 01 22
 			NDWORD m_unk2;	// 5-8 = AE .. E1 0E
-		} TSyncRequest;
+		} WalkUnknown;
 
 		struct	// size = >3	// user typed in text.
 		{

@@ -399,7 +399,7 @@ void NetState::beginTransaction(long priority)
 
 	//DEBUGNETWORK(("%lx:Starting a new packet transaction.\n", id()));
 
-	m_outgoing.pendingTransaction = new ExtendedPacketTransaction(this, g_Cfg.m_fUsePacketPriorities? priority : static_cast<long>(PacketSend::PRI_NORMAL));
+	m_outgoing.pendingTransaction = new ExtendedPacketTransaction(this, g_Cfg.m_fUsePacketPriorities? priority : (long)PacketSend::PRI_NORMAL);
 }
 
 void NetState::endTransaction(void)
@@ -449,7 +449,7 @@ void HistoryIP::setBlocked(bool isBlocked, int timeout)
 		CScriptTriggerArgs args(m_ip.GetAddrStr());
 		args.m_iN1 = timeout;
 		g_Serv.r_Call("f_onserver_blockip", &g_Serv, &args);
-		timeout = static_cast<long>(args.m_iN1);
+		timeout = args.m_iN1;
 	}
 
 	m_blocked = isBlocked;
@@ -575,15 +575,15 @@ PacketManager::~PacketManager(void)
 {
 	// delete standard packet handlers
 	for (size_t i = 0; i < COUNTOF(m_handlers); ++i)
-		unregisterPacket(static_cast<unsigned int>(i));
+		unregisterPacket(i);
 
 	// delete extended packet handlers
 	for (size_t i = 0; i < COUNTOF(m_extended); ++i)
-		unregisterExtended(static_cast<unsigned int>(i));
+		unregisterExtended(i);
 
 	// delete encoded packet handlers
 	for (size_t i = 0; i < COUNTOF(m_encoded); ++i)
-		unregisterEncoded(static_cast<unsigned int>(i));
+		unregisterEncoded(i);
 }
 
 void PacketManager::registerStandardPackets(void)
@@ -606,7 +606,6 @@ void PacketManager::registerStandardPackets(void)
 	registerPacket(XCMD_CharStatReq, new PacketCharStatusReq());				// status request
 	registerPacket(XCMD_Skill, new PacketSkillLockChange());					// change skill lock
 	registerPacket(XCMD_VendorBuy, new PacketVendorBuyReq());					// buy items from vendor
-	registerPacket(XCMD_StaticUpdate, new PacketStaticUpdate());				// UltimaLive Packet
 	registerPacket(XCMD_MapEdit, new PacketMapEdit());							// edit map pins
 	registerPacket(XCMD_CharPlay, new PacketCharPlay());						// select character
 	registerPacket(XCMD_BookPage, new PacketBookPageEdit());					// edit book content
@@ -657,7 +656,7 @@ void PacketManager::registerStandardPackets(void)
 	registerPacket(XCMD_MacroEquipItem, new PacketEquipItemMacro());			//
 	registerPacket(XCMD_MacroUnEquipItem, new PacketUnEquipItemMacro());		//
 	registerPacket(XCMD_WalkNew, new PacketMovementReqNew());					// movement request (SA)
-	registerPacket(XCMD_TSyncReply, new PacketTimeSyncReply());						//
+	registerPacket(XCMD_WalkUnknown, new PacketUnknown(9));						//
 	registerPacket(XCMD_CrashReport, new PacketCrashReport());					//
 	registerPacket(XCMD_CreateHS, new PacketCreateHS());						// create character (HS)
 
@@ -680,7 +679,6 @@ void PacketManager::registerStandardPackets(void)
 	registerExtended(EXTDATA_AntiCheat, new PacketAntiCheat());					// anti-cheat / unknown
 	registerExtended(EXTDATA_BandageMacro, new PacketBandageMacro());			//
 	registerExtended(EXTDATA_GargoyleFly, new PacketGargoyleFly());				// gargoyle flying action
-	registerExtended(EXTDATA_WheelBoatMove, new PacketWheelBoatMove());			// wheel boat movement
 
 	// encoded packets (0xD7)
 	registerEncoded(EXTAOS_HcBackup, new PacketHouseDesignBackup());			// house design - backup
@@ -2576,15 +2574,15 @@ void NetworkManager::acceptNewConnection(void)
 		CLOSESOCKET(h);
 
 		if (ip.m_blocked)
-			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (Blocked IP)\n", static_cast<LPCTSTR>(client_addr.GetAddrStr()));
+			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (Blocked IP)\n", (LPCTSTR)client_addr.GetAddrStr());
 		else if ( maxIp && ip.m_connecting > maxIp )
-			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (CONNECTINGMAXIP reached %ld/%ld)\n", static_cast<LPCTSTR>(client_addr.GetAddrStr()), ip.m_connecting, maxIp);
+			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (CONNECTINGMAXIP reached %ld/%ld)\n", (LPCTSTR)client_addr.GetAddrStr(), ip.m_connecting, maxIp);
 		else if ( climaxIp && ip.m_connected > climaxIp )
-			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (CLIENTMAXIP reached %ld/%ld)\n", static_cast<LPCTSTR>(client_addr.GetAddrStr()), ip.m_connected, climaxIp);
+			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (CLIENTMAXIP reached %ld/%ld)\n", (LPCTSTR)client_addr.GetAddrStr(), ip.m_connected, climaxIp);
 		else if ( ip.m_pings >= NETHISTORY_MAXPINGS )
-			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (MAXPINGS reached %ld/%ld)\n", static_cast<LPCTSTR>(client_addr.GetAddrStr()), ip.m_pings, static_cast<long>(NETHISTORY_MAXPINGS) );
+			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (MAXPINGS reached %ld/%ld)\n", (LPCTSTR)client_addr.GetAddrStr(), ip.m_pings, static_cast<long>(NETHISTORY_MAXPINGS) );
 		else
-			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected.\n", static_cast<LPCTSTR>(client_addr.GetAddrStr()));
+			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected.\n", (LPCTSTR)client_addr.GetAddrStr());
 
 		return;
 	}
@@ -2599,11 +2597,11 @@ void NetworkManager::acceptNewConnection(void)
 		DEBUGNETWORK(("Unable to allocate new slot for client, too many clients already connected.\n"));
 		CLOSESOCKET(h);
 
-		g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (CLIENTMAX reached)\n", static_cast<LPCTSTR>(client_addr.GetAddrStr()));
+		g_Log.Event(LOGM_CLIENTS_LOG|LOGL_ERROR, "Connection from %s rejected. (CLIENTMAX reached)\n", (LPCTSTR)client_addr.GetAddrStr());
 		return;
 	}
 
-	DEBUGNETWORK(("%lx:Allocated slot for client (%lu).\n", state->id(), static_cast<unsigned long>(h)));
+	DEBUGNETWORK(("%lx:Allocated slot for client (%lu).\n", state->id(), (unsigned long)h));
 
 	// assign slot
 	EXC_SET("assigning slot");
@@ -2661,7 +2659,7 @@ void NetworkManager::start(void)
 	ASSERT(m_stateCount == 0);
 	m_states = new NetState*[g_Cfg.m_iClientsMax];
 	for (size_t l = 0; l < g_Cfg.m_iClientsMax; l++)
-		m_states[l] = new NetState(static_cast<long>(l));
+		m_states[l] = new NetState(l);
 	m_stateCount = g_Cfg.m_iClientsMax;
 
 	DEBUGNETWORK(("Created %" FMTSIZE_T " network slots (system limit of %d clients)\n", m_stateCount, FD_SETSIZE));
@@ -3025,7 +3023,7 @@ void NetworkInput::receiveData()
 			
 		// receive data
 		EXC_SET("messages - receive");
-		int received = state->m_socket.Receive(m_receiveBuffer, NETWORK_BUFFERSIZE, 0);
+		size_t received = state->m_socket.Receive(m_receiveBuffer, NETWORK_BUFFERSIZE, 0);
 		if (received <= 0 || received > NETWORK_BUFFERSIZE)
 		{
 			state->markReadClosed();
@@ -3053,7 +3051,7 @@ void NetworkInput::receiveData()
 			Packet* packet = new Packet(buffer, length);
 			state->m_incoming.rawPackets.push(packet);
 			buffer += length;
-			received -= static_cast<int>(length);
+			received -= length;
 		}
 	}
 
@@ -3087,23 +3085,17 @@ void NetworkInput::processData()
 		EXC_SET("check message");
 		if (state->m_incoming.rawPackets.empty())
 		{
-			if (client->GetConnectType() != CONNECT_TELNET)
+			// check for timeout
+			EXC_SET("check frozen");
+			int iLastEventDiff = -g_World.GetTimeDiff( client->m_timeLastEvent );
+			if ( g_Cfg.m_iDeadSocketTime > 0 && iLastEventDiff > g_Cfg.m_iDeadSocketTime )
 			{
-				// check for timeout
-				EXC_SET("check frozen");
-				INT64 iLastEventDiff = -g_World.GetTimeDiff( client->m_timeLastEvent );
-				if ( g_Cfg.m_iDeadSocketTime > 0 && iLastEventDiff > g_Cfg.m_iDeadSocketTime )
-				{
-					g_Log.Event(LOGM_CLIENTS_LOG|LOGL_EVENT, "%lx:Frozen client connection disconnected.\n", state->id());
-					state->markReadClosed();
-				}
+				g_Log.Event(LOGM_CLIENTS_LOG|LOGL_EVENT, "%lx:Frozen client connection disconnected.\n", state->id());
+				state->markReadClosed();
 			}
 
-			if (state->m_incoming.rawBuffer == NULL)
-			{
-				EXC_SET("next state");
-				continue;
-			}
+			EXC_SET("next state");
+			continue;
 		}
 
 		EXC_SET("messages - process");
@@ -3132,34 +3124,31 @@ void NetworkInput::processData()
 			delete packet;
 		}
 
-		if (g_Serv.IsLoading() == false)
+		EXC_SET("start client profile");
+		ProfileTask clientTask(PROFILE_CLIENTS);
+
+		EXC_SET("packets - process");
+		Packet* buffer = state->m_incoming.rawBuffer;
+		if (buffer != NULL)
 		{
-			EXC_SET("start client profile");
-			ProfileTask clientTask(PROFILE_CLIENTS);
-
-			EXC_SET("packets - process");
-			Packet* buffer = state->m_incoming.rawBuffer;
-			if (buffer != NULL)
+			// we have a buffer of raw bytes, we need to go through them all and process as much as we can
+			while (state->isReadClosed() == false && buffer->getRemainingLength() > 0)
 			{
-				// we have a buffer of raw bytes, we need to go through them all and process as much as we can
-				while (state->isReadClosed() == false && buffer->getRemainingLength() > 0)
-				{
-					if (processData(state, buffer))
-						continue;
+				if (processData(state, buffer))
+					continue;
 
-					// processData didn't want to use any data, which means we probably
-					// received some invalid data or that the packet was malformed
-					// best course of action right now is to close the connection
-					state->markReadClosed();
-					break;
-				}
+				// processData didn't want to use any data, which means we probably
+				// received some invalid data or that the packet was malformed
+				// best course of action right now is to close the connection
+				state->markReadClosed();
+				break;
+			}
 
-				if (buffer->getRemainingLength() <= 0)
-				{
-					EXC_SET("packets - clear buffer");
-					delete buffer;
-					state->m_incoming.rawBuffer = NULL;
-				}
+			if (buffer->getRemainingLength() <= 0)
+			{
+				EXC_SET("packets - clear buffer");
+				delete buffer;
+				state->m_incoming.rawBuffer = NULL;
 			}
 		}
 		EXC_SET("next state");
@@ -3281,14 +3270,14 @@ bool NetworkInput::processGameClientData(NetState* state, Packet* buffer)
 			//  allow skipping the packet which we do not wish to get
 			if (client->xPacketFilter(packet->getRemainingData(), packetLength))
 			{
-				packet->skip(static_cast<long>(packetLength));
+				packet->skip(packetLength);
 				continue;
 			}
 
 			// copy data to handler
 			handler->seek();
 			handler->writeData(packet->getRemainingData(), packetLength);
-			packet->skip(static_cast<long>(packetLength));
+			packet->skip(packetLength);
 
 			// move to position 1 (no need for id) and fire onReceive()
 			handler->resize(packetLength);
@@ -3304,7 +3293,7 @@ bool NetworkInput::processGameClientData(NetState* state, Packet* buffer)
 				// todo: adjust packet filter to specify size!
 				// packet has been handled by filter but we don't know how big the packet
 				// actually is.. we can only assume the entire buffer is used.
-				packet->skip(static_cast<long>(remainingLength));
+				packet->skip(remainingLength);
 				remainingLength = 0;
 				break;
 			}
@@ -3313,7 +3302,7 @@ bool NetworkInput::processGameClientData(NetState* state, Packet* buffer)
 			// strange behaviours (it's unlikely that only 1 byte is incorrect), so
 			// it's best to just discard everything we have
 			g_Log.Event(LOGM_CLIENTS_LOG|LOGL_WARN, "%lx:Unknown game packet (0x%x) received.\n", state->id(), packetId);
-			packet->skip(static_cast<long>(remainingLength));
+			packet->skip(remainingLength);
 			remainingLength = 0;
 		}
 	}
@@ -3323,7 +3312,7 @@ bool NetworkInput::processGameClientData(NetState* state, Packet* buffer)
 	TemporaryString dump;
 	packet->dump(dump);
 
-	g_Log.EventDebug("%lx:Parsing %s", state->id(), static_cast<LPCTSTR>(dump));
+	g_Log.EventDebug("%lx:Parsing %s", state->id(), (LPCTSTR)dump);
 
 	state->m_packetExceptions++;
 	if (state->m_packetExceptions > 10)
@@ -3390,7 +3379,7 @@ bool NetworkInput::processOtherClientData(NetState* state, Packet* buffer)
 				if (buffer->getRemainingLength() < iEncKrLen)
 					return false; // need more data
 
-				buffer->skip(static_cast<long>(iEncKrLen));
+				buffer->skip(iEncKrLen);
 				return true;
 			}
 
@@ -3501,13 +3490,6 @@ bool NetworkInput::processUnknownClientData(NetState* state, Packet* buffer)
 			{
 				DEBUGNETWORK(("%lx:Not enough data received to be a valid handshake (%" FMTSIZE_T ").\n", state->id(), buffer->getRemainingLength()));
 			}
-		}
-		else if(buffer->getRemainingData()[0] == XCMD_UOGRequest && buffer->getRemainingLength() == 8)
-		{
-			DEBUGNETWORK(("%lx:Receiving new UOG status request.\n", state->id()));
-			buffer->skip(7);
-			buffer->getRemainingData()[0] = 0x7F;
-			return true;
 		}
 		else
 		{
@@ -3844,13 +3826,13 @@ size_t NetworkOutput::processAsyncQueue(NetState* state)
 		packet = state->m_outgoing.asyncQueue.front();
 		state->m_outgoing.asyncQueue.pop();
 
+		// check if the client is allowed this
+		if (state->canReceive(packet) && packet->onSend(client))
+			break;
+			
+		// destroy the packet, we aren't going to use it
 		if (packet != NULL)
 		{
-			// check if the client is allowed this
-			if (state->canReceive(packet) && packet->onSend(client))
-				break;
-
-			// destroy the packet, we aren't going to use it
 			delete packet;
 			packet = NULL;
 		}
@@ -4021,8 +4003,8 @@ size_t NetworkOutput::sendData(NetState* state, const BYTE* data, size_t length)
 		// send via async winsock
 		ZeroMemory(&state->m_overlapped, sizeof(WSAOVERLAPPED));
 		state->m_overlapped.hEvent = state;
-		state->m_bufferWSA.len = static_cast<ULONG>(length);
-		state->m_bufferWSA.buf = reinterpret_cast<CHAR *>(const_cast<BYTE *>(data));
+		state->m_bufferWSA.len = length;
+		state->m_bufferWSA.buf = (CHAR*)data;
 
 		DWORD bytesSent;
 		if (state->m_socket.SendAsync(&state->m_bufferWSA, 1, &bytesSent, 0, &state->m_overlapped, SendCompleted) == 0)
@@ -4039,7 +4021,7 @@ size_t NetworkOutput::sendData(NetState* state, const BYTE* data, size_t length)
 #endif
 	{
 		// send via standard api
-		int sent = state->m_socket.Send(data, static_cast<int>(length));
+		int sent = state->m_socket.Send(data, length);
 		if (sent > 0)
 			result = static_cast<size_t>(sent);
 		else
@@ -4081,13 +4063,16 @@ size_t NetworkOutput::sendData(NetState* state, const BYTE* data, size_t length)
 			if (state->isClosing() == false)
 				g_Log.Event(LOGM_CLIENTS_LOG|LOGL_WARN, "%lx:TX Error %d\n", state->id(), errorCode);
 
-			// Connection error should clear the client too
+#ifndef _WIN32
 			result = _failed_result();
+#else
+			result = 0;
+#endif
 		}
 	}
 
 	if (result > 0 && result != _failed_result())
-		CurrentProfileData.Count(PROFILE_DATA_TX, static_cast<DWORD>(result));
+		CurrentProfileData.Count(PROFILE_DATA_TX, result);
 
 	return result;
 	EXC_CATCH;

@@ -1105,10 +1105,12 @@ bool CChar::UpdateAnimate(ANIM_TYPE action, bool fTranslate, bool fBackward , BY
 		action1 = NANIM_DEATH;
 		break;
 	}
-	PacketActionBasic* cmdnew = new PacketActionBasic(this, action1, subaction, variation);
-	PacketAction* cmd = new PacketAction(this, action, 1, fBackward, iFrameDelay, iAnimLen);
 
-	ClientIterator it;
+	PacketAction* cmd = new PacketAction(this, action, 1, fBackward, iFrameDelay);
+	UpdateCanSee(cmd);
+	return( true );
+
+	/*ClientIterator it;
 	for (CClient* pClient = it.next(); pClient != NULL; pClient = it.next())
 	{
 		if (!pClient->CanSee(this))
@@ -1122,7 +1124,7 @@ bool CChar::UpdateAnimate(ANIM_TYPE action, bool fTranslate, bool fBackward , BY
 	}
 	delete cmdnew;
 	delete cmd;	
-	return true;
+	return true;*/
 }
 
 void CChar::UpdateMode( CClient * pExcludeClient, bool fFull )

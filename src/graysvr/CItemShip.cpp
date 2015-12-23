@@ -238,24 +238,6 @@ bool CItemShip::Ship_MoveDelta( CPointBase pdelta )
 			{
 				if (pObj == this) //This is the ship (usually the first item in the list)
 				{
-					if ((pClient->GetNetState()->isClientVersion(MINCLIVER_HIGHSEAS) || pClient->GetNetState()->isClientSA()) && !IsSetOF(OF_NoSmoothSailing))
-					{
-						CPointMap ptdir = GetTopPoint();
-						ptdir += pdelta;
-
-						new PacketMoveShip(pClient, this, ppObjs, iCount, m_itShip.m_DirMove, m_itShip.m_DirFace, Multi_GetDef()->m_SpeedMode);
-
-						//Client is on Ship
-						if (tMe->GetRegion()->GetResourceID().GetObjUID() == GetUID())
-						{
-							CPointMap pt = tMe->GetTopPoint();
-							pt -= pdelta;
-							pClient->addPlayerSeeShip( pt );
-							if (pClient->GetNetState()->isClientSA())
-								new PacketPlayerPosition(pClient);
-							break; //skip to next client
-						}
-					}
 				}
 				if (pObj->IsItem())
 				{

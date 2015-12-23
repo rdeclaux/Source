@@ -309,7 +309,7 @@ void CClient::SysMessage( LPCTSTR pszMsg ) const // System message (In lower lef
 			{
 				if ( ISINTRESOURCE(pszMsg) || *pszMsg == '\0' ) return;
 
-				new PacketTelnet(this, pszMsg, true);
+				new PacketTelnet(this, pszMsg);
 			}
 			return;
 		case CONNECT_CRYPT:
@@ -1509,7 +1509,7 @@ bool CClient::r_Verb( CScript & s, CTextConsole * pSrc ) // Execute command from
 						CArgs += ( !strcmp(ppArgs[i], "NULL") ? " " : ppArgs[i] );
 					}
 
-					addBarkLocalizedEx( iClilocId, NULL, static_cast<HUE_TYPE>(hue), TALKMODE_SYSTEM, FONT_NORMAL, static_cast<AFFIX_TYPE>(affix), ppArgs[3], CArgs.GetPtr() );
+					addBarkLocalizedEx( iClilocId, NULL, (HUE_TYPE)hue, TALKMODE_SYSTEM, FONT_NORMAL, (AFFIX_TYPE)affix, ppArgs[3], (TCHAR*)CArgs.GetPtr() );
 				}
 			}
 			break;

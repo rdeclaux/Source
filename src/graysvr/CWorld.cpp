@@ -2417,22 +2417,6 @@ void CWorld::OnTick()
 	if ( IsSetSpecific )
 		TIME_PROFILE_START;
 
-	if ( g_Cfg.m_iFeatureSA & FEATURE_SA_MOVEMENT )
-	{
-		if ( m_timeSync <= GetCurrentTime())
-		{
-			m_timeSync = GetCurrentTime() + SYNC_TICK_PERIOD;
-			ClientIterator it;
-			for (CClient* pClient = it.next(); pClient != NULL; pClient = it.next())
-			{
-				CChar * tMe = pClient->GetChar();
-				if ( tMe == NULL )
-					continue;
-				new PacketTimeSyncRequest(pClient);
-			}
-		}
-	}
-
 	if ( m_timeSector <= GetCurrentTime())
 	{
 		// Only need a SECTOR_TICK_PERIOD tick to do world stuff.

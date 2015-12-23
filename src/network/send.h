@@ -29,7 +29,7 @@ class PacketTelnet : public PacketSend
 {
 public:
 
-	PacketTelnet(const CClient* target, LPCTSTR message, bool bNullTerminated = false);
+	PacketTelnet(const CClient* target, LPCTSTR message);
 };
 
 /***************************************************************************
@@ -42,8 +42,8 @@ public:
 class PacketWeb : public PacketSend
 {
 public:
-	PacketWeb(const CClient * target = NULL, const BYTE * data = NULL, size_t length = 0);
-	void setData(const BYTE * data, size_t length);
+	PacketWeb(const CClient* target = NULL, BYTE* data = NULL, size_t length = 0);
+	void setData(BYTE* data, size_t length);
 };
 
 /***************************************************************************
@@ -392,20 +392,6 @@ public:
 /***************************************************************************
  *
  *
- *	Packet 0x3F : PacketQueryClient			Query Client for block info (NORMAL)
- *
- *
- ***************************************************************************/
-class PacketQueryClient : public PacketSend
-{
-public:
-	PacketQueryClient(CClient* target, BYTE bCmd = 0xFF);
-
-};
-
-/***************************************************************************
- *
- *
  *	Packet 0x4F : PacketGlobalLight			sets global light level (NORMAL)
  *
  *
@@ -573,20 +559,13 @@ public:
  *
  *
  *	Packet 0x6E : PacketAction				plays an animation (LOW)
- *	Packet 0xE2 : PacketActionBasic			plays an animation (client > 7.0.0.0) (LOW)
  *
  *
  ***************************************************************************/
 class PacketAction : public PacketSend
 {
 public:
-	PacketAction(const CChar* character, ANIM_TYPE action, WORD repeat, bool backward, BYTE delay, BYTE len);
-};
-
-class PacketActionBasic : public PacketSend
-{
-public:
-	PacketActionBasic(const CChar* character, ANIM_TYPE_NEW action, ANIM_TYPE_NEW subaction, BYTE variation);
+	PacketAction(const CChar* character, ANIM_TYPE action, WORD repeat, bool backward, BYTE delay);
 };
 
 /***************************************************************************
@@ -778,7 +757,6 @@ public:
 		EncNoCrypt,     // non-crypted client not allowed
 		CharIdle,       // character is already ingame
 		TooManyChars,   // account has too many characters
-		CreationBlocked,// character creation is blocked in this moments.
 		BlockedIP,      // ip is blocked
 		MaxClients,     // max clients reached
 		MaxGuests,      // max guests reached
@@ -1564,7 +1542,7 @@ public:
 class PacketMessageLocalisedEx : public PacketSend
 {
 public:
-	PacketMessageLocalisedEx(const CClient* target, int cliloc, const CObjBaseTemplate* source, HUE_TYPE hue, TALKMODE_TYPE mode, FONT_TYPE font, AFFIX_TYPE affixType, LPCTSTR affix, LPCTSTR args);
+	PacketMessageLocalisedEx(const CClient* target, int cliloc, const CObjBaseTemplate* source, HUE_TYPE hue, TALKMODE_TYPE mode, FONT_TYPE font, AFFIX_TYPE affixType, TCHAR* affix, TCHAR* args);
 };
 
 /***************************************************************************
@@ -1610,7 +1588,7 @@ class PacketPropertyList : public PacketSend
 {
 protected:
 	CGrayUID m_object;
-	long long m_time;
+	long m_time;
 	DWORD m_version;
 	int m_entryCount;
 
@@ -1760,25 +1738,6 @@ public:
 /***************************************************************************
  *
  *
- *	Packet 0xF2 : PacketTimeSyncRequest		time sync request (NORMAL)
- *
- *
- ***************************************************************************/
-class PacketTimeSyncRequest : public PacketSend
-{
-public:
-	PacketTimeSyncRequest(const CClient* target);
-
-	virtual bool canSendTo(const NetState* state) const { return CanSendTo(state); }
-	static bool CanSendTo(const NetState* state)
-	{
-		return state->isClientVersion(MINCLIVER_SA) || state->isClientSA() || state->isClientKR();
-	}
-};
-
-/***************************************************************************
- *
- *
  *	Packet 0xF3 : PacketItemWorldNew		sends item on ground (NORMAL)
  *
  *
@@ -1835,7 +1794,7 @@ public:
 class PacketMoveShip : public PacketSend
 {
 public:
-	PacketMoveShip(const CClient* target, const CItemShip* ship, CObjBase** objects, size_t objectCount, BYTE movedirection, BYTE boatdirection, BYTE speed);
+	PacketMoveShip(const CItemShip* ship, CObjBase** objects, size_t objectCount, DIR_TYPE direction, BYTE speed);
 };
 
 /***************************************************************************

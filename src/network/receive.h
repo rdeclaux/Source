@@ -50,7 +50,7 @@ public:
 	virtual bool onReceive(NetState* net);
 
 protected:
-	void doMovement(NetState* net, BYTE direction, short sequence, DWORD crypt, INT64 iTime1 = 0, INT64 iTime2 = 0);
+	void doMovement(NetState* net, BYTE direction, short sequence, DWORD crypt);
 };
 
 /***************************************************************************
@@ -241,21 +241,6 @@ class PacketVendorBuyReq : public Packet
 {
 public:
 	PacketVendorBuyReq();
-	virtual bool onReceive(NetState* net);
-};
-
-/***************************************************************************
- *
- *
- *	Packet 0x3F : PacketStaticUpdate			Ultima live and (God Client?)
- *
- *
- ***************************************************************************/
-
-class PacketStaticUpdate : public Packet
-{
-public:
-	PacketStaticUpdate();
 	virtual bool onReceive(NetState* net);
 };
 
@@ -976,20 +961,6 @@ public:
 /***************************************************************************
  *
  *
- *	Packet 0xBF.0x33 : PacketWheelBoatMove			wheel boat movement
- *
- *
- ***************************************************************************/
-class PacketWheelBoatMove : public Packet
-{
-public:
-	PacketWheelBoatMove();
-	virtual bool onReceive(NetState* net);
-};
-
-/***************************************************************************
- *
- *
  *	Packet 0xC2 : PacketPromptResponseUnicode		prompt response (unicode)
  *
  *
@@ -1418,20 +1389,6 @@ class PacketMovementReqNew : public PacketMovementReq
 {
 public:
 	PacketMovementReqNew();
-	virtual bool onReceive(NetState* net);
-};
-
-/***************************************************************************
- *
- *
- *	Packet 0xF1 : PacketTimeSyncReply				time sync reply (KR/SA)
- *
- *
- ***************************************************************************/
-class PacketTimeSyncReply : public Packet
-{
-public:
-	PacketTimeSyncReply();
 	virtual bool onReceive(NetState* net);
 };
 

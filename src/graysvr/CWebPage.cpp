@@ -863,7 +863,7 @@ bool CWebPageDef::ServPage( CClient * pClient, TCHAR * pszPage, CGTime * pdateIf
 		sText.GetLength(),
 		static_cast<LPCTSTR>(sText));
 
-	new PacketWeb(pClient, reinterpret_cast<const BYTE *>(sMsgHead.GetPtr()), sMsgHead.GetLength());
+	//new PacketWeb(pClient, reinterpret_cast<const BYTE *>(sMsgHead.GetPtr()), sMsgHead.GetLength());
 	return false;
 }
 
