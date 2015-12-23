@@ -332,7 +332,7 @@ public:
 	void ResendOnEquip( bool fAllClients = false );	// Fix for Enhanced Client when equipping items via DClick, these must be removed from where they are and sent again.
 	void ResendTooltip( bool bSendFull = false, bool bUseCache = false );	// force reload of tooltip for this object
 	void UpdateCanSee( PacketSend * pPacket, CClient * pClientExclude = NULL ) const;
-	void UpdateObjMessage( LPCTSTR pTextThem, LPCTSTR pTextYou, CClient * pClientExclude, HUE_TYPE wHue, TALKMODE_TYPE mode, FONT_TYPE font, bool bUnicode = false ) const;
+	void UpdateObjMessage( LPCTSTR pTextThem, LPCTSTR pTextYou, CClient * pClientExclude, HUE_TYPE wHue, TALKMODE_TYPE mode, FONT_TYPE font = FONT_NORMAL, bool bUnicode = false ) const;
 
 	TRIGRET_TYPE OnHearTrigger(CResourceLock &s, LPCTSTR pCmd, CChar *pSrc, TALKMODE_TYPE &mode, HUE_TYPE wHue = HUE_DEFAULT);
 
@@ -3332,14 +3332,14 @@ public:
 
 private:
 	// Noto/Karma stuff. --------------------------------
-	void Noto_Karma( int iKarma, int iBottom=INT_MIN, bool bMessage = false );
+public:
+	void Noto_Karma( int iKarma, int iBottom=INT_MIN );
 	void Noto_Fame( int iFameChange );
 	void Noto_ChangeNewMsg( int iPrv );
 	void Noto_ChangeDeltaMsg( int iDelta, LPCTSTR pszType );
 
 public:
-	NOTO_TYPE Noto_GetFlag( const CChar * pChar, bool fIncog = false, bool fInvul = false, bool bGetColor = false ) const;
-	NOTO_TYPE Noto_CalcFlag( const CChar * pChar, bool fIncog = false, bool fInvul = false ) const;
+	NOTO_TYPE Noto_GetFlag( const CChar * pChar, bool fIncog = false, bool fInvul = false ) const;
 	HUE_TYPE Noto_GetHue( const CChar * pChar, bool fIncog = false ) const;
 	bool Noto_IsNeutral() const;
 	bool Noto_IsMurderer() const;
@@ -3356,24 +3356,9 @@ public:
 	LPCTSTR Noto_GetTitle() const;
 
 	void Noto_Kill(CChar * pKill, bool fPetKill = false, int iOtherKillers = 0);
-	bool Noto_Criminal( CChar * pChar = NULL);
+	void Noto_Criminal();
 	void Noto_Murder();
 	void Noto_KarmaChangeMessage( int iKarmaChange, int iLimit );
-	int NotoSave() { return static_cast<int>(m_notoSaves.size()); }
-	void NotoSave_Add( CChar * pChar, NOTO_TYPE value, NOTO_TYPE color = NOTO_INVALID );
-	NOTO_TYPE NotoSave_GetValue( int id, bool bGetColor = false );
-	NOTO_TYPE NotoSave_GetValue( CChar * pChar );
-	INT64 NotoSave_GetTime( int id );
-	void NotoSave_SetValue( CChar * pChar, NOTO_TYPE value );
-	void NotoSave_SetValue( int pChar, NOTO_TYPE value);
-	void NotoSave_Clear();
-	void NotoSave_Update();
-	void NotoSave_Resend( int id );
-	int NotoSave_GetID( CChar * pChar );
-	int NotoSave_GetID( CGrayUID pChar );
-	CChar * NotoSave_GetUID( int index );
-	bool NotoSave_Delete( CChar * pChar, bool bForced );
-	void NotoSave_CheckTimeout();
 
 	bool IsTakeCrime( const CItem * pItem, CChar ** ppCharMark = NULL ) const;
 
@@ -3592,9 +3577,9 @@ public:
 	bool Memory_Fight_OnTick( CItemMemory * pMemory );
 
 	bool Fight_Attack( const CChar * pCharTarg, bool toldByMaster = false );
-	bool Fight_Clear( const CChar * pCharTarg , bool bForced = false );
+	bool Fight_Clear( const CChar * pCharTarg );
 	void Fight_ClearAll();
-	CChar * Fight_FindBestTarget();
+	CChar * Fight_FindBestTarget() const;
 	bool Fight_AttackNext();
 	void Fight_HitTry();
 	WAR_SWING_TYPE Fight_Hit( CChar * pCharTarg );

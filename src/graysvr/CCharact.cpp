@@ -2387,7 +2387,7 @@ bool CChar::OnTickEquip( CItem * pItem )
 		case LAYER_FLAG_Criminal:
 			// update char notoriety when criminal timer goes off
 			StatFlag_Clear( STATF_Criminal );
-			NotoSave_Update();
+			//NotoSave_Update();
 			return( false );
 
 		case LAYER_FLAG_Murders:
@@ -2408,7 +2408,7 @@ bool CChar::OnTickEquip( CItem * pItem )
 				}
 
 				m_pPlayer->m_wMurders = static_cast<WORD>(args.m_iN1);
-				NotoSave_Update();
+				//NotoSave_Update();
 				if ( m_pPlayer->m_wMurders == 0 ) return( false );
 				pItem->SetTimeout(args.m_iN2);	// update it's decay time.
 				return( true );
@@ -2821,7 +2821,7 @@ bool CChar::Death()
 
 	//	clear list of attackers
 	m_lastAttackers.clear();
-	NotoSave_Update();
+	//NotoSave_Update();
 
 	if ( m_pPlayer )
 	{
@@ -4146,8 +4146,8 @@ bool CChar::OnTick()
 		EXC_SET("last attackers");
 		Attacker_CheckTimeout();
 
-		EXC_SET("NOTO timeout");
-		NotoSave_CheckTimeout();
+		//EXC_SET("NOTO timeout");
+		//NotoSave_CheckTimeout();
 
 		if ( IsClient() )
 		{

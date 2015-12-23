@@ -3664,7 +3664,7 @@ BYTE CClient::Setup_Start( CChar * pChar ) // Send character startup stuff to pl
 		CChar * pCharNear = AreaChars.GetChar();
 		if ( pCharNear == NULL )
 			break;
-		pCharNear->NotoSave_Clear();
+		//pCharNear->NotoSave_Clear();
 	}
 
 	if ( IsTrigUsed(TRIGGER_LOGIN) )

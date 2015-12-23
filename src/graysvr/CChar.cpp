@@ -1920,63 +1920,7 @@ do_default:
 				}
 				return false;
 			}
-		case CHC_NOTOSAVE:
-			{
-				if ( strlen( pszKey ) == 8 )
-				{
-					sVal.FormatVal(m_notoSaves.size());
-					return true;
-				}
 
-				sVal.FormatVal(0);
-				pszKey += 8;
-
-				if ( *pszKey == '.' )
-				{
-					pszKey++;
-					if ( !strnicmp(pszKey, "ID", 2 ) )
-					{
-						pszKey += 2;	// ID + whitspace
-						CChar * pChar = static_cast<CChar*>(static_cast<CGrayUID>(Exp_GetSingle(pszKey)).CharFind());
-						if ( !NotoSave_GetID(pChar) )
-							sVal.FormatVal( -1 );
-						else
-							sVal.FormatVal(NotoSave_GetID(pChar));
-						return true;
-					}
-					if ( m_notoSaves.size() )
-					{
-						size_t notoIndex = m_notoSaves.size();
-
-						notoIndex = Exp_GetVal(pszKey);
-
-						SKIP_SEPARATORS(pszKey);
-						if ( notoIndex < m_notoSaves.size() )
-						{
-							NotoSaves & refnoto = m_notoSaves.at(notoIndex);
-
-							if ( !strnicmp(pszKey, "VALUE", 5) )
-							{
-								sVal.FormatVal(refnoto.value);
-								return true;
-							}
-							else if ( !strnicmp(pszKey, "ELAPSED", 7) )
-							{
-								sVal.FormatVal(static_cast<long>(refnoto.time));
-								return true;
-							}
-							else if (( !strnicmp(pszKey, "UID", 3) ) || ( *pszKey == '\0' ))
-							{
-								CGrayUID uid = refnoto.charUID;
-								sVal.FormatHex( uid.CharFind() ? refnoto.charUID : 0 );
-								return true;
-							}
-						}
-					}
-				}
-
-				return true;
-			}
 
 		case CHC_FIGHTRANGE: //RANGE is now writable so this is changed to FIGHTRANGE as readable only
 			sVal.FormatVal( CalcFightRange( m_uidWeapon.ItemFind() ) );
@@ -2830,7 +2774,7 @@ do_default:
 			break;
 		case CHC_FLAGS:		// DO NOT MODIFY STATF_SaveParity, STATF_Spawned, STATF_Pet
 			m_StatFlag = ( s.GetArgVal() &~ (STATF_SaveParity|STATF_Pet|STATF_Spawned)) | ( m_StatFlag & (STATF_SaveParity|STATF_Pet|STATF_Spawned) );
-			NotoSave_Update();
+			//NotoSave_Update();
 			break;
 		case CHC_FONT:
 			m_fonttype = static_cast<FONT_TYPE>(s.GetArgVal());
@@ -3422,7 +3366,7 @@ bool CChar::r_Verb( CScript &s, CTextConsole * pSrc ) // Execute command from sc
 			if ( s.HasArgs() && ! s.GetArgVal())
 			{
 				StatFlag_Clear( STATF_Criminal );
-				NotoSave_Update();
+				//NotoSave_Update();
 			}
 			else
 			{
@@ -3553,7 +3497,7 @@ bool CChar::r_Verb( CScript &s, CTextConsole * pSrc ) // Execute command from sc
 			if ( pSrc )
 			{
 				m_StatFlag = s.GetArgFlag( m_StatFlag, STATF_INVUL );
-				NotoSave_Update();
+				//NotoSave_Update();
 				if ( IsSetOF( OF_Command_Sysmsgs ) )
 					pSrc->SysMessage( IsStatFlag( STATF_INVUL )? g_Cfg.GetDefaultMsg(DEFMSG_INVUL_ON) : g_Cfg.GetDefaultMsg(DEFMSG_INVUL_OFF) );
 			}
@@ -3640,12 +3584,6 @@ bool CChar::r_Verb( CScript &s, CTextConsole * pSrc ) // Execute command from sc
 					}
 				}
 			} break;
-		case CHV_NOTOCLEAR:
-			NotoSave_Clear();
-			break;
-		case CHV_NOTOUPDATE:
-			NotoSave_Update();
-			break;
 		case CHV_OPENPAPERDOLL:
 		{
 			CClient * pClient = NULL;

@@ -840,6 +840,8 @@ MSG(SNOOPING_CANT,					"snooping_cant",					"You can not peek into the container
 MSG(SNOOPING_FAILED,				"snooping_failed",					"You failed to peek into the container.")
 MSG(SNOOPING_REACH,					"snooping_reach",					"That is too far away.")
 MSG(SNOOPING_YOUR,					"snooping_your",					"attempting to peek into")
+MSG(SNOOPING_MARK,			"snooping_mark",			"Your mark is too far away.")
+MSG(SNOOPING_SOMEONE,		"snooping_someone",			"peeking into")
 MSG(SPELL_ALCOHOL_HIC,				"spell_alcohol_hic",				"*Hic*")
 MSG(SPELL_ANIMDEAD_FAIL,			"spell_animdead_fail",				"The corpse stirs for a moment then falls!")
 MSG(SPELL_ANIMDEAD_NC,				"spell_animdead_nc",				"That is not a corpse!")

@@ -336,8 +336,8 @@ void CChar::Stat_SetBase( STAT_TYPE i, short iVal )
 	
 	m_Stat[i].m_base = iVal;
 	UpdateStatsFlag();
-	if ( !g_Serv.IsLoading() && i == STAT_KARMA )
-		NotoSave_Update();
+	//if ( !g_Serv.IsLoading() && i == STAT_KARMA )
+	//	NotoSave_Update();
 }
 
 short CChar::Stat_GetLimit( STAT_TYPE i ) const

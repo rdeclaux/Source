@@ -412,7 +412,7 @@ void CPartyDef::AcceptMember( CChar * pChar )
 
 	SendAddList( NULL );
 
-	pChar->NotoSave_Update();
+	//pChar->NotoSave_Update();
 	// else
 	//	throwerror !!
 }
@@ -478,7 +478,7 @@ bool CPartyDef::RemoveMember( CGrayUID uidRemove, CGrayUID uidCommand )
 		SendRemoveList( pCharRemove, true );
 		DetachChar( pCharRemove );
 		pCharRemove->m_pParty = NULL;
-		pCharRemove->NotoSave_Update();
+		//pCharRemove->NotoSave_Update();
 	}
 
 	if ( m_Chars.GetCharCount() <= 1 )
@@ -540,7 +540,7 @@ bool CPartyDef::Disband( CGrayUID uidMaster )
 		}
 
 		SendRemoveList( pChar, true );
-		pChar->NotoSave_Update();
+		//pChar->NotoSave_Update();
 		pChar->m_pParty = NULL;
 	}
 
@@ -647,8 +647,8 @@ bool CPartyDef::AcceptEvent( CChar * pCharAccept, CGrayUID uidInviter, bool bFor
 		// create the party now.
 		pParty = new CPartyDef( pCharInviter, pCharAccept );
 		ASSERT(pParty);
-		pCharInviter->NotoSave_Update();
-		pCharAccept->NotoSave_Update();
+		//pCharInviter->NotoSave_Update();
+		//pCharAccept->NotoSave_Update();
 		g_World.m_Parties.InsertHead( pParty );
 		pParty->SysMessageChar(pCharInviter, pszMsg);
 	}
